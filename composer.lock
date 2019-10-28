@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3f58318c1d83b3a4bf8f08c98604e227",
+    "content-hash": "1da67f8963e57335368c123f55e5c9c9",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -379,6 +379,60 @@
                 "trusted proxy"
             ],
             "time": "2019-09-03T16:45:42+00:00"
+        },
+        {
+            "name": "herzult/php-ssh",
+            "version": "v1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Herzult/php-ssh.git",
+                "reference": "d569d15483a5f9218700313cd21c50090aa93351"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Herzult/php-ssh/zipball/d569d15483a5f9218700313cd21c50090aa93351",
+                "reference": "d569d15483a5f9218700313cd21c50090aa93351",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ssh2": "*",
+                "php": ">=5.3.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*",
+                "symfony/filesystem": "~2.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Ssh": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "The contributors",
+                    "homepage": "http://github.com/Herzult/php-ssh/contributors"
+                },
+                {
+                    "name": "Antoine Hérault",
+                    "homepage": "https://github.com/Herzult"
+                }
+            ],
+            "description": "Provides an object-oriented wrapper for the php ssh2 extension.",
+            "keywords": [
+                "ssh",
+                "ssh2"
+            ],
+            "time": "2015-03-17T22:03:22+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -797,26 +851,26 @@
         },
         {
             "name": "laravelcollective/remote",
-            "version": "v6.0.1",
+            "version": "v6.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LaravelCollective/remote.git",
-                "reference": "650772d398c41cd963a0a5e7203597763e3b7698"
+                "reference": "67880f2cbc09e0b10788675022149fb34cf13f41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LaravelCollective/remote/zipball/650772d398c41cd963a0a5e7203597763e3b7698",
-                "reference": "650772d398c41cd963a0a5e7203597763e3b7698",
+                "url": "https://api.github.com/repos/LaravelCollective/remote/zipball/67880f2cbc09e0b10788675022149fb34cf13f41",
+                "reference": "67880f2cbc09e0b10788675022149fb34cf13f41",
                 "shasum": ""
             },
             "require": {
-                "illuminate/filesystem": "6.0.*",
-                "illuminate/support": "6.0.*",
+                "illuminate/filesystem": "^6.0",
+                "illuminate/support": "^6.0",
                 "php": ">=7.2",
                 "phpseclib/phpseclib": "^2.0"
             },
             "require-dev": {
-                "illuminate/console": "6.0.*",
+                "illuminate/console": "^6.0",
                 "mockery/mockery": "~1.0",
                 "phpunit/phpunit": "~5.5"
             },
@@ -855,7 +909,7 @@
             ],
             "description": "Remote SSH access for The Laravel Framework.",
             "homepage": "http://laravelcollective.com",
-            "time": "2019-09-05T12:43:58+00:00"
+            "time": "2019-10-02T00:44:41+00:00"
         },
         {
             "name": "league/flysystem",

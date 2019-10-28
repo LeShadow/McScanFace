@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\Server;
 use App\Http\Requests\StoreServerRequest;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ use PHPUnit\Framework\Constraint\IsEmpty;
 class ServerController extends Controller
 {
     protected $servers;
-    public function __construct(){
+    public function __construct(ServerRepositoryInterface $server){
+        $this->servers = $server;
     }
     /**
      * Display a listing of the resource.
@@ -21,6 +23,7 @@ class ServerController extends Controller
     public function index()
     {
         //
+        return view('servers.overview', [ 'servers' => $this->servers->findWhere(['user_id','=',Auth::user()->id])]);
     }
 
     /**
@@ -31,6 +34,7 @@ class ServerController extends Controller
     public function create()
     {
         //
+        return view('servers.create');
     }
 
     /**
@@ -42,18 +46,14 @@ class ServerController extends Controller
     public function store(StoreServerRequest $request)
     {
         //
-        if(!IsEmpty($request->input('ip'))){
             return $this->servers->create([
                 'ip'      => $request->ip,
                 'port'    => $request->port,
                 'passkey' => $request->passkey,
                 'user'    => $request->user,
                 'name'    => $request->name,
+                'user_id' => Auth::user()->id,
             ]);
-        }
-        else{
-            return view('servers.create');
-        }
 
     }
 
@@ -66,29 +66,45 @@ class ServerController extends Controller
     public function show(Server $server)
     {
         //
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Server  $server
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return void
      */
-    public function edit(Server $server)
+    public function edit($id)
     {
         //
+        return view('servers.edit', [ 'servers' => $this->servers->find($id)]);
+
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Server  $server
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param $id
+     * @return void
      */
-    public function update(Request $request, Server $server)
+    public function update(StoreServerRequest $request, $id)
     {
         //
+        $server_update =  $this->servers->update($id,
+            [
+                'ip'      => $request->ip,
+                'port'    => $request->port,
+                'passkey' => $request->passkey,
+                'user'    => $request->user,
+                'name'    => $request->name,
+                'user_id' => Auth::user()->id,
+            ]);
+        if($server_update === true)
+        {
+            return redirect()->route('server_overview');
+        }
     }
 
     /**

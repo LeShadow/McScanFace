@@ -17,7 +17,7 @@ class CreateServersTable extends Migration
             $table->bigIncrements('id');
             $table->ipAddress('ip');
             $table->integer('port');
-            $table->float('speed');
+            $table->float('speed')->nullable();
             $table->string('user');
             $table->text('passkey');
             $table->string('name');

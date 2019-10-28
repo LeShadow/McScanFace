@@ -13,7 +13,7 @@ class StoreServerRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class StoreServerRequest extends FormRequest
     public function rules()
     {
         return [
-            'address' => 'required|ip',
+            'ip' => 'required|ip',
             'port'    => 'required|integer',
             'name'    => 'required|string:255',
             'passkey' => 'required|string',
