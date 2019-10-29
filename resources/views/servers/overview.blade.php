@@ -37,7 +37,13 @@
         <td>{{ $server->ip }}</td>
         <td>{{ $server->port }}</td>
         <td>{{ $server->user }}</td>
-        <td class="text-center"><span class="badge badge-danger">Offline</span></td>
+        <td class="text-center">
+            @if($server->status == 1)
+                <span class="badge badge-danger">Offline</span>
+            @else
+                <span class="badge badge-success">Online</span>
+            @endif
+        </td>
         <td><div class="btn-group btn-group-sm float-right" role="group" aria-label="Server Actions">
                 <a href="{{ route('get_edit_server', ['id'=>$server->id]) }}" role="button" class="btn btn-primary btn-sm">Edit Server</a>
                 <a href="{{ route('delete_server') }}" role="button" class="btn btn-danger btn-sm">Delete Server</a>

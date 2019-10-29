@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth;
 use App\Server;
+use Carbon\Carbon;
 use App\Http\Requests\StoreServerRequest;
 use Illuminate\Http\Request;
 use App\Repositories\ServerRepositoryInterface;
@@ -43,8 +44,9 @@ class ServerController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function store(StoreServerRequest $request)
     {
@@ -55,7 +57,8 @@ class ServerController extends Controller
         $rsa = new RSA();
         $rsa->setPublicKeyFormat(RSA::PUBLIC_FORMAT_OPENSSH);
         $rsa->setPrivateKeyFormat(RSA::PRIVATE_FORMAT_OPENSSH);
-        $rsa->comment = $request->name . '-' . $server_uuid;
+        //$rsa->comment = $request->name . '-' . $server_uuid;
+        $rsa->comment = Carbon::now()->timestamp . '-' . $server_uuid;
         $result = $rsa->createKey(4096);
 
 

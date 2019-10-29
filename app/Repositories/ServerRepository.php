@@ -37,13 +37,9 @@ class ServerRepository implements ServerRepositoryInterface
     public function update($id, array $data)
     {
         $server = Server::find($id);
-        $server->ip = $data['ip'];
-        $server->port = $data['port'];
-        $server->user = $data['user'];
-        $server->private_key = $data['private_key'];
-        $server->public_key = $data['public_key'];
-        $server->name = $data['name'];
-        $server->user_id = $data['user_id'];
+        foreach($data as $key => $value) {
+            $server->$key = $value;
+        }
         return $server->save();
     }
 
