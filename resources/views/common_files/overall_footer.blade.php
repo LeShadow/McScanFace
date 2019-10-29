@@ -14,5 +14,10 @@
             });
         });
 
+
+        function copyText(element_name){
+            document.getElementById(element_name).select();
+            document.execCommand('copy');
+        }
 </script>
 </html>

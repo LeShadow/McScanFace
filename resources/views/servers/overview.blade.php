@@ -17,15 +17,16 @@
             <h5 class="card-title px-3">Servers</h5>
 
             <p class="card-text">
-<table class="table">
+            <div class="table-responsive">
+<table class="table table-hover table-striped">
     <thead>
     <tr>
         <th scope="col">Name</th>
         <th scope="col">IP</th>
         <th scope="col">Port</th>
         <th scope="col">User</th>
-        <th scope="col">Status</th>
-        <th scope="col">Actions</th>
+        <th scope="col" class="text-center">Status</th>
+        <th scope="col" class="text-right">Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -36,23 +37,24 @@
         <td>{{ $server->ip }}</td>
         <td>{{ $server->port }}</td>
         <td>{{ $server->user }}</td>
-        <td><span class="badge badge-danger">Offline</span></td>
-        <td><div class="btn-group btn-group-sm" role="group" aria-label="Server Actions">
-                <a href="{{ route('get_edit_server', ['id'=>$server->id]) }}" role="button" class="btn btn-primary btn-sm float-right">Edit Server</a>
-                <a href="{{ route('delete_server') }}" role="button" class="btn btn-danger btn-sm float-right">Delete Server</a>
+        <td class="text-center"><span class="badge badge-danger">Offline</span></td>
+        <td><div class="btn-group btn-group-sm float-right" role="group" aria-label="Server Actions">
+                <a href="{{ route('get_edit_server', ['id'=>$server->id]) }}" role="button" class="btn btn-primary btn-sm">Edit Server</a>
+                <a href="{{ route('delete_server') }}" role="button" class="btn btn-danger btn-sm">Delete Server</a>
             </div>
         </td>
     </tr>
     @endforeach
     @else
         <tr>
-            <td colspan="4" class="text-center">
+            <td colspan="6" class="text-center">
                 Empty server list
             </td>
         </tr>
     @endif
     </tbody>
 </table>
+            </div>
             </p>
         </div>
     </div>
