@@ -8,6 +8,9 @@ use App\Http\Requests\StoreServerRequest;
 use Illuminate\Http\Request;
 use App\Repositories\ServerRepositoryInterface;
 use PHPUnit\Framework\Constraint\IsEmpty;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
+use phpseclib\Crypt\RSA;
 
 class ServerController extends Controller
 {
@@ -46,14 +49,35 @@ class ServerController extends Controller
     public function store(StoreServerRequest $request)
     {
         //
-            return $this->servers->create([
-                'ip'      => $request->ip,
-                'port'    => $request->port,
-                'passkey' => $request->passkey,
-                'user'    => $request->user,
-                'name'    => $request->name,
-                'user_id' => Auth::user()->id,
-            ]);
+        // Generate SSH Key for the server
+        //
+        $server_uuid = Uuid::uuid4();
+        $rsa = new RSA();
+        $rsa->setPublicKeyFormat(RSA::PUBLIC_FORMAT_OPENSSH);
+        $rsa->setPrivateKeyFormat(RSA::PRIVATE_FORMAT_OPENSSH);
+        $rsa->comment = $request->name . '-' . $server_uuid;
+        $result = $rsa->createKey(4096);
+
+
+        $server_create = $this->servers->create([
+            'uuid'        => $server_uuid,
+            'ip'          => $request->ip,
+            'port'        => $request->port,
+            'private_key' => $result['privatekey'],
+            'public_key'  => $result['publickey'],
+            'user'        => $request->user,
+            'name'        => $request->name,
+            'user_id'     => Auth::user()->id,
+        ]);
+
+        if($server_create) {
+            $request->session()->flash('server_success', 'Added server <b>' . $request->name . '</b> successfully.');
+        }
+        else{
+            $request->session()->flash('server_error', 'Something went wrong while adding: <b>' . $request->name . '</b>.');
+        }
+
+        return redirect()->route('server_overview');
 
     }
 
@@ -63,9 +87,10 @@ class ServerController extends Controller
      * @param  \App\Server  $server
      * @return \Illuminate\Http\Response
      */
-    public function show(Server $server)
+    public function show($id)
     {
         //
+        return view('servers.detail', ['server' => $this->servers->find($id)]);
 
     }
 

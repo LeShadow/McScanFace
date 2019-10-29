@@ -36,6 +36,9 @@
                         </form>
                     </div>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('preferences') }}">{{ __('Preferences') }}</a>
+                </li>
             @endguest
         </ul>
         <form class="form-inline my-2 my-lg-0">

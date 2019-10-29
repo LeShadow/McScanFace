@@ -10,13 +10,16 @@
     "require": {
         "php": "^7.2",
         "fideloper/proxy": "^4.0",
+        "geoip2/geoip2": "^2.9",
         "herzult/php-ssh": "^1.1",
         "laravel/framework": "^6.0",
         "laravel/telescope": "^2.1",
         "laravel/tinker": "^1.0",
         "laravel/ui": "^1.0",
         "laravelcollective/remote": "^6.0",
-        "livewire/livewire": "^0.3.8"
+        "livewire/livewire": "^0.3.8",
+        "phpseclib/phpseclib": "^2.0",
+        "ramsey/uuid": "^3.8"
     },
     "require-dev": {
         "facade/ignition": "^1.4",

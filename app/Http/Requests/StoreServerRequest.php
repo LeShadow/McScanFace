@@ -27,7 +27,7 @@ class StoreServerRequest extends FormRequest
             'ip' => 'required|ip',
             'port'    => 'required|integer',
             'name'    => 'required|string:255',
-            'passkey' => 'required|string',
+            //'passkey' => 'required|string',
             'user'    => 'required|string:255',
         ];
     }

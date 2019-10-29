@@ -40,7 +40,8 @@ class ServerRepository implements ServerRepositoryInterface
         $server->ip = $data['ip'];
         $server->port = $data['port'];
         $server->user = $data['user'];
-        $server->passkey = $data['passkey'];
+        $server->private_key = $data['private_key'];
+        $server->public_key = $data['public_key'];
         $server->name = $data['name'];
         $server->user_id = $data['user_id'];
         return $server->save();
@@ -49,10 +50,12 @@ class ServerRepository implements ServerRepositoryInterface
     public function create(array $data)
     {
         $server = new Server();
+        $server->uuid = $data['uuid'];
         $server->ip = $data['ip'];
         $server->port = $data['port'];
         $server->user = $data['user'];
-        $server->passkey = $data['passkey'];
+        $server->private_key = $data['private_key'];
+        $server->public_key = $data['public_key'];
         $server->name = $data['name'];
         $server->user_id = $data['user_id'];
         return $server->save();

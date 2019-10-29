@@ -15,11 +15,13 @@ class CreateServersTable extends Migration
     {
         Schema::create('servers', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->uuid('uuid');
             $table->ipAddress('ip');
             $table->integer('port');
             $table->float('speed')->nullable();
             $table->string('user');
-            $table->text('passkey');
+            $table->text('private_key');
+            $table->text('public_key');
             $table->string('name');
             $table->integer('user_id');
             $table->timestamps();

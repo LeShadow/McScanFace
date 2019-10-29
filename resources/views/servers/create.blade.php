@@ -52,7 +52,7 @@
                                     @enderror
                                 </div>
                             </div>
-
+                            <!--
                             <div class="form-group row">
                                 <label for="passkey" class="col-md-4 col-form-label text-md-right">{{ __('Password/User Key') }}</label>
 
@@ -66,7 +66,7 @@
                                     @enderror
                                 </div>
                             </div>
-
+                            -->
                             <div class="form-group row">
                                 <label for="user" class="col-md-4 col-form-label text-md-right">{{ __('user') }}</label>
 
