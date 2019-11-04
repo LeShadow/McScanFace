@@ -138,11 +138,20 @@ class ServerController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Server  $server
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return void
      */
-    public function destroy(Server $server)
+    public function destroy(Request $request)
     {
         //
+        if($this->servers->delete($request->id))
+        {
+            $request->session()->flash('server_success', 'Deleted server <b>' . $request->name . '</b> successfully.');
+        }
+        else
+        {
+            $request->session()->flash('server_error', 'Something went wrong while deleting: <b>' . $request->name . '</b>.');
+        }
+        return redirect()->route('server_overview');
     }
 }

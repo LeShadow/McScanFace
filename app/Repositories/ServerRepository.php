@@ -4,7 +4,7 @@
 namespace App\Repositories;
 
 use App\Server;
-
+use Auth;
 class ServerRepository implements ServerRepositoryInterface
 {
     protected $server;
@@ -21,7 +21,16 @@ class ServerRepository implements ServerRepositoryInterface
 
     public function findWhere(array $condition)
     {
-        return Server::where($condition[0], $condition[1], $condition[2])->get();
+        //return Server::where($condition[0], $condition[1], $condition[2])->where('user_id', '=', Auth::user()->id)->get();
+        if(count($condition) == count($condition, 1))
+        {
+            $query_condition = [$condition];
+        }
+        else
+        {
+            $query_condition = $condition;
+        }
+        return Server::where($query_condition)->get();
     }
 
     public function all()
@@ -31,7 +40,8 @@ class ServerRepository implements ServerRepositoryInterface
 
     public function delete($id)
     {
-
+        $server = Server::find($id);
+        return $server->delete();
     }
 
     public function update($id, array $data)
@@ -46,14 +56,10 @@ class ServerRepository implements ServerRepositoryInterface
     public function create(array $data)
     {
         $server = new Server();
-        $server->uuid = $data['uuid'];
-        $server->ip = $data['ip'];
-        $server->port = $data['port'];
-        $server->user = $data['user'];
-        $server->private_key = $data['private_key'];
-        $server->public_key = $data['public_key'];
-        $server->name = $data['name'];
-        $server->user_id = $data['user_id'];
+        foreach($data as $key => $value) {
+            $server->$key = $value;
+        }
+        $server->user_id = Auth::user()->id;
         return $server->save();
     }
 }

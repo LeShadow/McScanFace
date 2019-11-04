@@ -27,5 +27,14 @@ Route::get('/servers/create', 'ServerController@create')->middleware('auth')->na
 Route::post('/servers/create', 'ServerController@store')->middleware('auth')->name('post_create_server');
 Route::get('/servers/edit/{id}', 'ServerController@edit')->middleware('auth')->name('get_edit_server');
 Route::post('/servers/edit/{id}', 'ServerController@update')->middleware('auth')->name('post_edit_server');
-Route::post('/servers/delete', 'ServerController@store')->middleware('auth')->name('delete_server');
+Route::post('/servers/delete', 'ServerController@destroy')->middleware('auth')->name('delete_server');
 Route::get('/servers/{id}', 'ServerController@show')->middleware('auth')->name('detail_server');
+
+Route::get('/scans/overview', 'ScanController@index')->middleware('auth')->name('scan_overview');
+Route::get('/scans/create', 'ScanController@create')->middleware('auth')->name('get_create_scan');
+Route::post('/scans/create', 'ScanController@store')->middleware('auth')->name('post_create_scan');
+Route::get('/scans/edit/{id}', 'ScanController@edit')->middleware('auth')->name('get_edit_scan');
+Route::post('/scans/edit/{id}', 'ScanController@update')->middleware('auth')->name('post_edit_scan');
+Route::post('/scans/delete', 'ScanController@destroy')->middleware('auth')->name('delete_scan');
+Route::get('/scans/{id}', 'ScanController@show')->middleware('auth')->name('detail_scan');
+Route::post('/scans/start/{id}', 'ScanController@start')->middleware('auth')->name('post_start_scan');

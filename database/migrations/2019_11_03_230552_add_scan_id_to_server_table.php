@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddStatusToServerTable extends Migration
+class AddScanIdToServerTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AddStatusToServerTable extends Migration
     {
         Schema::table('servers', function (Blueprint $table) {
             //
-            $table->smallInteger('status')->default(0)->after('ip');
+            $table->Integer('scan_id')->default(0);
         });
     }
 
@@ -28,7 +28,6 @@ class AddStatusToServerTable extends Migration
     {
         Schema::table('servers', function (Blueprint $table) {
             //
-            $table->dropColumn('status');
         });
     }
 }

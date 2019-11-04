@@ -26,27 +26,42 @@
         <th scope="col">Port</th>
         <th scope="col">User</th>
         <th scope="col" class="text-center">Status</th>
+        <th scope="col" class="text-center">Masscan Status</th>
         <th scope="col" class="text-right">Actions</th>
     </tr>
     </thead>
     <tbody>
     @if(count($servers)>0)
         @foreach($servers as $server)
-    <tr class='clickable-row' data-href='{{asset('/servers/' . $server->id)}}'>
+    <!--<tr class='clickable-row' data-href='{{asset('/servers/' . $server->id)}}'>-->
+    <tr>
         <td>{{ $server->name }}</td>
         <td>{{ $server->ip }}</td>
         <td>{{ $server->port }}</td>
         <td>{{ $server->user }}</td>
         <td class="text-center">
-            @if($server->status == 1)
+            @if($server->status == 0)
                 <span class="badge badge-danger">Offline</span>
             @else
                 <span class="badge badge-success">Online</span>
             @endif
         </td>
+        <td class="text-center">
+            @if($server->masscan_install_status == 0)
+                <span class="badge badge-danger">N/A</span>
+            @else
+                <span class="badge badge-success">Installed</span>
+            @endif
+        </td>
         <td><div class="btn-group btn-group-sm float-right" role="group" aria-label="Server Actions">
                 <a href="{{ route('get_edit_server', ['id'=>$server->id]) }}" role="button" class="btn btn-primary btn-sm">Edit Server</a>
-                <a href="{{ route('delete_server') }}" role="button" class="btn btn-danger btn-sm">Delete Server</a>
+                <!--<a href="{{ route('delete_server') }}" role="button" class="btn btn-danger btn-sm">Delete Server</a>-->
+                <a class="btn btn-danger btn-sm" href="{{ route('delete_server') }}" onclick="event.preventDefault();document.getElementById('delete-server-form').submit();">{{ __('Delete Server') }}</a>
+
+                <form id="delete-server-form" action="{{ route('delete_server') }}" method="POST" style="display: none;">
+                    <input type="hidden" name="id" value="{{ $server->id }}">
+                    @csrf
+                </form>
             </div>
         </td>
     </tr>

@@ -4,10 +4,7 @@ namespace App\Console\Commands;
 
 use App\Repositories\ServerRepositoryInterface;
 use Illuminate\Console\Command;
-use Ssh\Configuration;
-use Ssh\Authentication\PublicKeyFile;
-use Ssh\Session;
-use Storage;
+use App\Classes\SSHHelper;
 class CheckServerStatus extends Command
 {
     /**
@@ -30,6 +27,7 @@ class CheckServerStatus extends Command
      * @return void
      */
     protected $servers;
+    protected $ssh;
     public function __construct(ServerRepositoryInterface $server){
         $this->servers = $server;
         parent::__construct();
@@ -46,24 +44,18 @@ class CheckServerStatus extends Command
         $servers_to_check = $this->servers->findWhere(['name', 'LIKE', '%Heimdall%']);
         foreach($servers_to_check as $server)
         {
+            $this->ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key);
+            $server_status = $this->ssh->isOnline();
 
-            Storage::put($server->uuid . '-public', $server->public_key);
-
-            Storage::put($server->uuid . '-private', $server->private_key);
-            $ssh_config = new Configuration($server->ip);
-            $ssh_auth = new PublicKeyFile($server->user, Storage::disk('local')->path($server->uuid . '-public'), Storage::disk('local')->path($server->uuid . '-private'), '');
-            $session = new Session($ssh_config, $ssh_auth);
-            try {
-                $exec = $session->getExec();
-                $this->servers->update($server->id, ['status' => 0]);
-                Storage::delete($server->uuid . '-public');
-                Storage::delete($server->uuid . '-private');
+            $this->servers->update($server->id, ['status' => $server_status]);
+            if($server_status) {
+                $command_output = $this->ssh->command('which masscan');
+                if ($command_output !== false) {
+                    $this->servers->update($server->id, ['masscan_install_status' => 1]);
+                } else {
+                    $this->servers->update($server->id, ['masscan_install_status' => 0]);
+                }
             }
-            catch(Exception $e) {
-                $this->servers->update($server->id, ['status' => 1]);
-            }
-
-
 
         }
 
