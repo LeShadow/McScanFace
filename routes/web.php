@@ -38,3 +38,4 @@ Route::post('/scans/edit/{id}', 'ScanController@update')->middleware('auth')->na
 Route::post('/scans/delete', 'ScanController@destroy')->middleware('auth')->name('delete_scan');
 Route::get('/scans/{id}', 'ScanController@show')->middleware('auth')->name('detail_scan');
 Route::post('/scans/start/{id}', 'ScanController@start')->middleware('auth')->name('post_start_scan');
+Route::post('/scans/results/{id}', 'ScanController@get_results')->middleware('auth')->name('post_results_scan');

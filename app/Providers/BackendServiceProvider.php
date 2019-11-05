@@ -22,5 +22,10 @@ class BackendServiceProvider extends ServiceProvider
             'App\Repositories\ScanRepositoryInterface',
             'App\Repositories\ScanRepository'
         );
+
+        $this->app->bind(
+            'App\Repositories\ScanFilesRepositoryInterface',
+            'App\Repositories\ScanFilesRepository'
+        );
     }
 }

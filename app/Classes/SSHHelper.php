@@ -16,7 +16,8 @@ Class SSHHelper {
     protected $pub_key;
     protected $priv_key;
     protected $ip;
-    protected $subsystem;
+    protected $subsystem_exec;
+    protected $subsystem_sftp;
     protected $self_subsystem;
 
     public function __construct($uuid, $user, $ip, $port, $pub_key, $priv_key)
@@ -38,7 +39,8 @@ Class SSHHelper {
         $ssh_config = new Configuration($this->ip, $this->port);
         $ssh_auth = new PublicKeyFile($this->user, Storage::disk('local')->path($this->uuid . '-public'), Storage::disk('local')->path($this->uuid . '-private'), '');
         $session = new Session($ssh_config, $ssh_auth);
-        $this->subsystem = $session->getExec();
+        $this->subsystem_exec = $session->getExec();
+        $this->subsystem_sftp = $session->getSftp();
         $this->self_subsystem = new SSHExec($session);
     }
 
@@ -46,7 +48,7 @@ Class SSHHelper {
     {
         try
         {
-            $this->subsystem->getResource();
+            $this->subsystem_exec->getResource();
             return true;
         }
         catch(\ErrorException $e)
@@ -63,10 +65,27 @@ Class SSHHelper {
             //{
             //    return $this->self_subsystem->run($data);
             //}
-            return $this->subsystem->run($data);
+            return $this->subsystem_exec->run($data);
         }
         catch(\RuntimeException $e)
         {
+            return false;
+        }
+    }
+
+    public function read_file($file_name)
+    {
+
+        try {
+            //if(Str::contains($data, 'nohup'))
+            //{
+            //    return $this->self_subsystem->run($data);
+            //}
+            return $this->subsystem_sftp->read($file_name);
+        }
+        catch(\RuntimeException $e)
+        {
+            dd($e);
             return false;
         }
     }

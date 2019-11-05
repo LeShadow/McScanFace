@@ -51,7 +51,7 @@
     </div>
 </nav>
 
-<div class="nav-scroller bg-white shadow-sm">
+<!--<div class="nav-scroller bg-white shadow-sm">
     <nav class="nav nav-underline">
         <a class="nav-link active" href="#">Dashboard</a>
         <a class="nav-link" href="#">
@@ -67,5 +67,5 @@
         <a class="nav-link" href="#">Link</a>
     </nav>
 </div>
-
+-->
 <main role="main" class="container-fluid">

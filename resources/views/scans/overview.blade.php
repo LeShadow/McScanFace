@@ -54,7 +54,12 @@
             @endif
         </td>
         <td><div class="btn-group btn-group-sm float-right" role="group" aria-label="Scan Actions">
-                <a href="{{ route('post_start_scan', ['id'=>$scan->id]) }}" role="button" class="btn btn-info btn-sm"  onclick="event.preventDefault();document.getElementById('start-scan-form-{{$scan->id}}').submit();" {{$scan->scan_status > 0 ? "disabled" : ""}}>Start Scan</a>
+                <a href="{{ route('post_results_scan', ['id'=>$scan->id]) }}" role="button" class="btn btn-dark btn-sm{{$scan->scan_status < 2 ? " disabled" : ""}}"  onclick="event.preventDefault();document.getElementById('results-scan-form-{{$scan->id}}').submit();" {{$scan->scan_status < 2 ? 'aria-disabled="true"' : ''}}>Get Results</a>
+                <form id="results-scan-form-{{$scan->id}}" action="{{ route('post_results_scan', ['id'=>$scan->id]) }}" method="POST" style="display: none;">
+                    <input type="hidden" name="id" value="{{ $scan->id }}">
+                    @csrf
+                </form>
+                <a href="{{ route('post_start_scan', ['id'=>$scan->id]) }}" role="button" class="btn btn-info btn-sm{{$scan->scan_status > 0 ? " disabled" : ""}}"  onclick="event.preventDefault();document.getElementById('start-scan-form-{{$scan->id}}').submit();" {{$scan->scan_status > 0 ? 'aria-disabled="true"' : ''}}>Start Scan</a>
                 <form id="start-scan-form-{{$scan->id}}" action="{{ route('post_start_scan', ['id'=>$scan->id]) }}" method="POST" style="display: none;">
                     <input type="hidden" name="id" value="{{ $scan->id }}">
                     @csrf
