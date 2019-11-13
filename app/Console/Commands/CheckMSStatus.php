@@ -29,6 +29,7 @@ class CheckMSStatus extends Command
      */
     protected $servers;
     protected $ssh;
+
     public function __construct(ServerRepositoryInterface $server)
     {
         $this->servers = $server;

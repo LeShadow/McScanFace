@@ -48,11 +48,13 @@ Class SSHHelper {
     {
         try
         {
-            $this->subsystem_exec->getResource();
+            $res = $this->subsystem_exec->getResource();
+            //print($res);
             return true;
         }
         catch(\ErrorException $e)
         {
+            //print('shit');
             return false;
         }
     }
@@ -61,10 +63,6 @@ Class SSHHelper {
     {
 
         try {
-            //if(Str::contains($data, 'nohup'))
-            //{
-            //    return $this->self_subsystem->run($data);
-            //}
             return $this->subsystem_exec->run($data);
         }
         catch(\RuntimeException $e)
@@ -77,15 +75,10 @@ Class SSHHelper {
     {
 
         try {
-            //if(Str::contains($data, 'nohup'))
-            //{
-            //    return $this->self_subsystem->run($data);
-            //}
             return $this->subsystem_sftp->read($file_name);
         }
         catch(\RuntimeException $e)
         {
-            dd($e);
             return false;
         }
     }

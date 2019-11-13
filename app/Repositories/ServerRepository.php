@@ -21,21 +21,17 @@ class ServerRepository implements ServerRepositoryInterface
 
     public function findWhere(array $condition)
     {
-        //return Server::where($condition[0], $condition[1], $condition[2])->where('user_id', '=', Auth::user()->id)->get();
+        $query_condition = $condition;
         if(count($condition) == count($condition, 1))
         {
             $query_condition = [$condition];
-        }
-        else
-        {
-            $query_condition = $condition;
         }
         return Server::where($query_condition)->get();
     }
 
     public function all()
     {
-
+        return Server::all();
     }
 
     public function delete($id)

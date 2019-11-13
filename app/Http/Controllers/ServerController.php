@@ -16,9 +16,12 @@ use phpseclib\Crypt\RSA;
 class ServerController extends Controller
 {
     protected $servers;
-    public function __construct(ServerRepositoryInterface $server){
+
+    public function __construct(ServerRepositoryInterface $server)
+    {
         $this->servers = $server;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -27,7 +30,7 @@ class ServerController extends Controller
     public function index()
     {
         //
-        return view('servers.overview', [ 'servers' => $this->servers->findWhere(['user_id','=',Auth::user()->id])]);
+        return view('servers.overview', ['servers' => $this->servers->findWhere(['user_id', '=', Auth::user()->id])]);
     }
 
     /**
@@ -63,20 +66,19 @@ class ServerController extends Controller
 
 
         $server_create = $this->servers->create([
-            'uuid'        => $server_uuid,
-            'ip'          => $request->ip,
-            'port'        => $request->port,
+            'uuid' => $server_uuid,
+            'ip' => $request->ip,
+            'port' => $request->port,
             'private_key' => $result['privatekey'],
-            'public_key'  => $result['publickey'],
-            'user'        => $request->user,
-            'name'        => $request->name,
-            'user_id'     => Auth::user()->id,
+            'public_key' => $result['publickey'],
+            'user' => $request->user,
+            'name' => $request->name,
+            'user_id' => Auth::user()->id,
         ]);
 
-        if($server_create) {
+        if ($server_create) {
             $request->session()->flash('server_success', 'Added server <b>' . $request->name . '</b> successfully.');
-        }
-        else{
+        } else {
             $request->session()->flash('server_error', 'Something went wrong while adding: <b>' . $request->name . '</b>.');
         }
 
@@ -87,7 +89,7 @@ class ServerController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Server  $server
+     * @param \App\Server $server
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -106,7 +108,7 @@ class ServerController extends Controller
     public function edit($id)
     {
         //
-        return view('servers.edit', [ 'servers' => $this->servers->find($id)]);
+        return view('servers.edit', ['servers' => $this->servers->find($id)]);
 
     }
 
@@ -120,17 +122,16 @@ class ServerController extends Controller
     public function update(StoreServerRequest $request, $id)
     {
         //
-        $server_update =  $this->servers->update($id,
+        $server_update = $this->servers->update($id,
             [
-                'ip'      => $request->ip,
-                'port'    => $request->port,
+                'ip' => $request->ip,
+                'port' => $request->port,
                 'passkey' => $request->passkey,
-                'user'    => $request->user,
-                'name'    => $request->name,
+                'user' => $request->user,
+                'name' => $request->name,
                 'user_id' => Auth::user()->id,
             ]);
-        if($server_update === true)
-        {
+        if ($server_update) {
             return redirect()->route('server_overview');
         }
     }
@@ -144,12 +145,9 @@ class ServerController extends Controller
     public function destroy(Request $request)
     {
         //
-        if($this->servers->delete($request->id))
-        {
+        if ($this->servers->delete($request->id)) {
             $request->session()->flash('server_success', 'Deleted server <b>' . $request->name . '</b> successfully.');
-        }
-        else
-        {
+        } else {
             $request->session()->flash('server_error', 'Something went wrong while deleting: <b>' . $request->name . '</b>.');
         }
         return redirect()->route('server_overview');

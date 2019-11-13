@@ -21,13 +21,10 @@ class ScanRepository implements ScanRepositoryInterface
 
     public function findWhere(array $condition)
     {
+        $query_condition = $condition;
         if(count($condition) == count($condition, 1))
         {
             $query_condition = [$condition];
-        }
-        else
-        {
-            $query_condition = $condition;
         }
         return Scan::where($query_condition)->get();
     }

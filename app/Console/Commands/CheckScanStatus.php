@@ -32,7 +32,9 @@ class CheckScanStatus extends Command
     protected $servers;
     protected $scans;
     protected $ssh;
-    public function __construct(ServerRepositoryInterface $server, ScanRepositoryInterface $scan){
+
+    public function __construct(ServerRepositoryInterface $server, ScanRepositoryInterface $scan)
+    {
         $this->servers = $server;
         $this->scans = $scan;
         parent::__construct();
@@ -46,31 +48,28 @@ class CheckScanStatus extends Command
     public function handle()
     {
         //
-        $scan_status = 0;
-        $scan = $this->scans->findWhere([['id','=',$this->argument('id')],['scan_status','=',1]]);
-        if($scan->count() == 0)
-        {
+        $scan_status = true;
+        $scan = $this->scans->findWhere([['id', '=', $this->argument('id')], ['scan_status', '=', 1]]);
+        if ($scan->count() == 0) {
             $this->error('No scan with that ID.');
-        }
-        else
-        {
+        } else {
             $scan_servers = $this->servers->findWhere(['scan_id', '=', $this->argument('id')]);
-            foreach($scan_servers as $server)
-            {
+            foreach ($scan_servers as $server) {
                 $this->ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key);
-                if(Str::contains($this->ssh->read_file('/' . $server->user . '/7_fuckyoukut.json'), 'finished: 1'))
-                {
-                    $scan_status = 1;
+                $scan_status = Str::contains($this->ssh->read_file('/' . $server->user . '/'.$scan[0]->id . '_' . str_replace(' ', '_', $scan[0]->name).'.json'), 'finished: 1');
+                //
+                // Masscan version supported: 1.0.4, we really on the finish tag. for version 5, we'll have to check the process list to see if it finished. Or add extra file
+                //
+                if($scan_status == false){
+                    break;
                 }
-                else
-                {
-                    $scan_status = 0;
-                }
-
             }
-            if($scan_status === 1)
-            {
+
+            if ($scan_status) {
                 $this->scans->update($this->argument('id'), ['scan_status' => 2]);
+/*                foreach ($scan_servers as $server) {
+                    $this->servers->update($server->id, ['scan_id' => 0]);
+                }*/
                 $this->info('Scan has finished.');
             }
         }

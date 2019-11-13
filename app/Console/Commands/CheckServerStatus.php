@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Repositories\ServerRepositoryInterface;
 use Illuminate\Console\Command;
 use App\Classes\SSHHelper;
+
 class CheckServerStatus extends Command
 {
     /**
@@ -28,7 +29,9 @@ class CheckServerStatus extends Command
      */
     protected $servers;
     protected $ssh;
-    public function __construct(ServerRepositoryInterface $server){
+
+    public function __construct(ServerRepositoryInterface $server)
+    {
         $this->servers = $server;
         parent::__construct();
     }
@@ -41,14 +44,13 @@ class CheckServerStatus extends Command
     public function handle()
     {
         //
-        $servers_to_check = $this->servers->findWhere(['name', 'LIKE', '%Heimdall%']);
-        foreach($servers_to_check as $server)
-        {
+        $servers_to_check = $this->servers->all();
+        foreach ($servers_to_check as $server) {
             $this->ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key);
             $server_status = $this->ssh->isOnline();
-
+            //print($server_status);
             $this->servers->update($server->id, ['status' => $server_status]);
-            if($server_status) {
+            if ($server_status) {
                 $command_output = $this->ssh->command('which masscan');
                 if ($command_output !== false) {
                     $this->servers->update($server->id, ['masscan_install_status' => 1]);

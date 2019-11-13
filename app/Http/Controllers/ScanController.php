@@ -167,19 +167,19 @@ class ScanController extends Controller
         //
 
         $scan_command = "screen -dmS masscan_scan masscan " .
-            str_replace("\n",",",$scan[0]->ip_ranges) . " -p" .
+            str_replace("\n", ",", $scan[0]->ip_ranges) . " -p" .
             $scan[0]->ports . " " .
             (($scan[0]->top_ports !== NULL) ? " --top-ports " .
                 $scan[0]->top_ports : "") . " --rate " .
             $scan[0]->rate . " --output-format " .
             $scan[0]->output_format . " --output_filename " .
             $scan[0]->id . "_" .
-            $scan[0]->name . "." .
+            str_replace(' ', '_', $scan[0]->name) . "." .
             $scan[0]->output_format . " " .
-            (($scan[0]->banners === 1) ? "--banners" : "") . "";
+            (($scan[0]->banners === 1) ? "--banners" : "") . " --source-port 61000";
 
-        //dd($scan_command);
         if ($scan_servers->count() === 1) {
+            //dd('only one');
             $server_connection = new SSHHelper($scan_servers[0]->uuid, $scan_servers[0]->user, $scan_servers[0]->ip, $scan_servers[0]->port, $scan_servers[0]->public_key, $scan_servers[0]->private_key);
             $this->scans->update($scan[0]->id, ['scan_status' => 1]);
             $this->servers->update($scan_servers[0]->id, ['scan_id' => $scan[0]->id]);
@@ -187,20 +187,21 @@ class ScanController extends Controller
             $request->session()->flash('scan_success', 'Scan started: <b>' . $scan[0]->name . '</b>.');
             return redirect()->route('scan_overview');
         }
-        else
-        {
-            $count = 1;
-            foreach($scan_servers as $scan_server)
-            {
-                $server_connection = new SSHHelper($scan_server->uuid, $scan_server->user, $scan_server->ip, $scan_server->port, $scan_server->public_key, $scan_server->private_key);
-                $this->scans->update($scan[0]->id, ['scan_status' => 1]);
-                $this->servers->update($scan_server->id, ['scan_id' => $scan[0]->id]);
-                $server_connection->command($scan_command . " --shards " . $count . "/" . $scan_servers->count());
-                $count++;
-            }
-            $request->session()->flash('scan_success', 'Scan started: <b>' . $scan[0]->name . '</b>.');
-            return redirect()->route('scan_overview');
+        $count = 1;
+        foreach ($scan_servers as $scan_server) {
+            //dd('only multiple');
+            $server_connection = new SSHHelper($scan_server->uuid, $scan_server->user, $scan_server->ip, $scan_server->port, $scan_server->public_key, $scan_server->private_key);
+            $this->scans->update($scan[0]->id, ['scan_status' => 1]);
+            $this->servers->update($scan_server->id, ['scan_id' => $scan[0]->id]);
+            //dd($scan_command . " --shards " . $count . "/" . $scan_servers->count());
+            $res = $server_connection->command($scan_command . " --shards " . $count . "/" . $scan_servers->count());
+            //print($scan_server->ip);
+            //dd($res);
+            $count++;
         }
+        $request->session()->flash('scan_success', 'Scan started: <b>' . $scan[0]->name . '</b>.');
+        return redirect()->route('scan_overview');
+
 
     }
 
@@ -230,33 +231,29 @@ class ScanController extends Controller
             return redirect()->route('scan_overview');
         }
 
-        $json_results = json_encode (new stdClass);
+        $json_results = json_encode(new stdClass);
 
-        foreach($servers as $server)
-        {
+        foreach ($servers as $server) {
             $ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key);
-            $result_data = $ssh->read_file('/' . $server->user . '/7_fuckyoukut.json');
-            $processed_data = '[' . Str::replaceFirst(",\n{finished: 1}\n",']',$result_data);
-            $json_results = json_encode(array_merge(json_decode($json_results, true),json_decode($processed_data, true)));
+            $result_data = $ssh->read_file('/' . $server->user . '/' . $request->input('id') . '_'.str_replace(' ', '_', $scan->name).'.json');
+            $processed_data = '[' . Str::replaceFirst(",\n{finished: 1}\n", ']', $result_data);
+            $json_results = json_encode(array_merge(json_decode($json_results, true), json_decode($processed_data, true)));
         }
 
         $file_name = 'results_' . Carbon::now()->timestamp . '.json';
-        if(Storage::disk('public')->put($file_name, $json_results))
-        {
+        if (Storage::disk('public')->put($file_name, $json_results)) {
             $this->scan_files->create(['filename' => $file_name, 'scan_id' => $request->input('id')]);
 
             $this->scans->update($request->input('id'), ['scan_status' => 3]);
-            foreach($servers as $server)
-            {
+            foreach ($servers as $server) {
                 $this->servers->update($server->id, ['scan_id' => 0]);
             }
             $request->session()->flash('scan_success', 'Scan succesfully processed. <b>You can download the files now</b>.');
             return redirect()->route('scan_overview');
         }
-        else
-        {
-            $request->session()->flash('scan_error', 'Something went wrong while processing the results.');
-            return redirect()->route('scan_overview');
-        }
+
+        $request->session()->flash('scan_error', 'Something went wrong while processing the results.');
+        return redirect()->route('scan_overview');
+
     }
 }
