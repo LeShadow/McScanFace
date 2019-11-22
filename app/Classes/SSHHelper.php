@@ -1,13 +1,11 @@
 <?php
-
 namespace App\Classes;
-use RuntimeException;
-use Ssh\Configuration;
-use Ssh\Authentication\PublicKeyFile;
-use Ssh\Session;
+use phpseclib\Crypt\RSA;
+use phpseclib\Net\SSH2;
+use phpseclib\Net\SFTP;
 use Illuminate\Support\Str;
 use Storage;
-
+use Illuminate\Support\Facades\Log;
 Class SSHHelper {
 
     protected $uuid;
@@ -19,8 +17,10 @@ Class SSHHelper {
     protected $subsystem_exec;
     protected $subsystem_sftp;
     protected $self_subsystem;
-
-    public function __construct($uuid, $user, $ip, $port, $pub_key, $priv_key)
+    protected $key;
+    protected $ssh;
+    protected $online = false;
+    public function __construct($uuid, $user, $ip, $port, $pub_key, $priv_key, $type = 'SSH2')
     {
         $this->ip = $ip;
         $this->user = $user;
@@ -29,32 +29,38 @@ Class SSHHelper {
         $this->priv_key = $priv_key;
         $this->port = $port;
 
-        $this->setup();
+        $this->setup($type);
     }
 
-    private function setup(){
-        Storage::put($this->uuid . '-public', $this->pub_key);
-        Storage::put($this->uuid . '-private', $this->priv_key);
+    private function setup($type){
+        if($type === 'SSH2'){
+            $this->ssh = new SSH2($this->ip, $this->port);
+        }
+        else
+        {
+            $this->ssh = new SFTP($this->ip, $this->port);
+        }
+        $this->key = new RSA();
+        $this->key->loadKey($this->priv_key);
+        $this->ssh->sendIdentificationStringLast();
+        if($this->ssh->login($this->user, $this->key)) {
+            $this->online = true;
+        }
 
-        $ssh_config = new Configuration($this->ip, $this->port);
-        $ssh_auth = new PublicKeyFile($this->user, Storage::disk('local')->path($this->uuid . '-public'), Storage::disk('local')->path($this->uuid . '-private'), '');
-        $session = new Session($ssh_config, $ssh_auth);
-        $this->subsystem_exec = $session->getExec();
-        $this->subsystem_sftp = $session->getSftp();
-        $this->self_subsystem = new SSHExec($session);
     }
 
     public function isOnline()
     {
-        try
-        {
-            $res = $this->subsystem_exec->getResource();
-            //print($res);
-            return true;
+        try {
+
+            if($this->online)
+            {
+                return true;
+            }
+
         }
-        catch(\ErrorException $e)
-        {
-            //print('shit');
+        catch(\ErrorException $e) {
+            dd($this->ssh->getLog());
             return false;
         }
     }
@@ -62,11 +68,13 @@ Class SSHHelper {
     public function command($data)
     {
 
+        //$this->ssh->login($this->user, $this->key);
         try {
-            return $this->subsystem_exec->run($data);
+            return $this->ssh->exec($data);
         }
-        catch(\RuntimeException $e)
+        catch(\ErrorException $e)
         {
+            dd($this->ssh->getLog());
             return false;
         }
     }
@@ -75,10 +83,24 @@ Class SSHHelper {
     {
 
         try {
-            return $this->subsystem_sftp->read($file_name);
+            $file_content = $this->ssh->get($file_name);
+            Log::debug($file_content);
+            Log::debug($this->ssh->getLog());
+            return $this->ssh->get($file_name);
         }
-        catch(\RuntimeException $e)
+        catch(\ErrorException $e)
         {
+            dd($e);
+            return false;
+        }
+    }
+
+    public function getDirs() {
+        try {
+            return $this->ssh->rawList();
+        }        catch(\ErrorException $e)
+        {
+            dd($e);
             return false;
         }
     }

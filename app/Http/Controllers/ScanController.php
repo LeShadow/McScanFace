@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Classes\SSHHelper;
@@ -18,7 +17,8 @@ use Ramsey\Uuid\Uuid;
 use Auth;
 use Storage;
 use \stdClass;
-
+use Illuminate\Support\Facades\Log;
+define('NET_SSH2_LOGGING', 2);
 class ScanController extends Controller
 {
     protected $scans;
@@ -124,7 +124,7 @@ class ScanController extends Controller
     public function show($id)
     {
         //
-        return view('scans.detail', ['scan' => $this->scans->find($id)]);
+        return view('scans.detail', ['scan' => $this->scans->find($id), 'files' => $this->scan_files->findWhere(['scan_id', '=', $id])]);
     }
 
     /**
@@ -189,14 +189,13 @@ class ScanController extends Controller
         }
         $count = 1;
         foreach ($scan_servers as $scan_server) {
-            //dd('only multiple');
+
             $server_connection = new SSHHelper($scan_server->uuid, $scan_server->user, $scan_server->ip, $scan_server->port, $scan_server->public_key, $scan_server->private_key);
             $this->scans->update($scan[0]->id, ['scan_status' => 1]);
             $this->servers->update($scan_server->id, ['scan_id' => $scan[0]->id]);
-            //dd($scan_command . " --shards " . $count . "/" . $scan_servers->count());
+            Log::debug($scan_command . " --shards " . $count . "/" . $scan_servers->count());
             $res = $server_connection->command($scan_command . " --shards " . $count . "/" . $scan_servers->count());
-            //print($scan_server->ip);
-            //dd($res);
+            Log::debug($res);
             $count++;
         }
         $request->session()->flash('scan_success', 'Scan started: <b>' . $scan[0]->name . '</b>.');
@@ -218,6 +217,8 @@ class ScanController extends Controller
 
     public function get_results(Request $request)
     {
+        Storage::disk('public')->makeDirectory('results');
+
         $scan = $this->scans->find($request->input('id'));
 
         if ($scan->scan_status < 2) {
@@ -234,15 +235,16 @@ class ScanController extends Controller
         $json_results = json_encode(new stdClass);
 
         foreach ($servers as $server) {
-            $ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key);
-            $result_data = $ssh->read_file('/' . $server->user . '/' . $request->input('id') . '_'.str_replace(' ', '_', $scan->name).'.json');
+            $ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key, 'SFTP');
+            $result_data = $ssh->read_file($request->input('id') . '_'.str_replace(' ', '_', $scan->name).'.' . $scan->output_format);
+            //'/' . $server->user . '/' .
             $processed_data = '[' . Str::replaceFirst(",\n{finished: 1}\n", ']', $result_data);
             $json_results = json_encode(array_merge(json_decode($json_results, true), json_decode($processed_data, true)));
         }
 
         $file_name = 'results_' . Carbon::now()->timestamp . '.json';
-        if (Storage::disk('public')->put($file_name, $json_results)) {
-            $this->scan_files->create(['filename' => $file_name, 'scan_id' => $request->input('id')]);
+        if (Storage::disk('public')->put('results/' . $file_name, $json_results)) {
+            $this->scan_files->create(['filename' => $file_name, 'hash' => hash_file('sha256', Storage::disk('public')->path('results/' . $file_name)), 'processed' => 0, 'scan_id' => $request->input('id')]);
 
             $this->scans->update($request->input('id'), ['scan_status' => 3]);
             foreach ($servers as $server) {

@@ -32,8 +32,8 @@
     <tbody>
     @if(count($scans)>0)
         @foreach($scans as $scan)
-    <!--<tr class='clickable-row' data-href='{{asset('/scans/' . $scan->id)}}'>-->
-    <tr>
+    <tr class='clickable-row' data-href='{{asset('/scans/' . $scan->id)}}'>
+    <!--<tr>-->
         <td>{{ $scan->name }}</td>
         <td>{{ $scan->ip_ranges }}</td>
         @if($scan->top_ports > 0)
@@ -79,7 +79,7 @@
     @else
         <tr>
             <td colspan="6" class="text-center">
-                Empty server list
+                Empty scan list
             </td>
         </tr>
     @endif

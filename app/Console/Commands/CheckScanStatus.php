@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use App\Repositories\ScanRepositoryInterface;
 use App\Repositories\ServerRepositoryInterface;
 use Illuminate\Console\Command;
-
+use Illuminate\Support\Facades\Log;
 class CheckScanStatus extends Command
 {
     /**
@@ -32,6 +32,7 @@ class CheckScanStatus extends Command
     protected $servers;
     protected $scans;
     protected $ssh;
+    protected $sftp;
 
     public function __construct(ServerRepositoryInterface $server, ScanRepositoryInterface $scan)
     {
@@ -58,8 +59,10 @@ class CheckScanStatus extends Command
                 $scan_servers = $this->servers->findWhere(['scan_id', '=', $scan->id]);
                 foreach ($scan_servers as $server) {
                     $this->ssh = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key);
-                    $scan_status = Str::contains($this->ssh->read_file('/' . $server->user . '/'.$scan->id . '_' . str_replace(' ', '_', $scan->name).'.json'), 'finished: 1');
-                    //
+                    $this->sftp = new SSHHelper($server->uuid, $server->user, $server->ip, $server->port, $server->public_key, $server->private_key, 'SFTP');
+                    $scan_status = Str::contains($this->sftp->read_file($scan->id . '_' . str_replace(' ', '_', $scan->name).'.' . $scan->output_format), 'finished: 1');
+                    Log::debug($this->sftp->getDirs());
+                    //'/' . $server->user . '/'.
                     // Masscan version supported: 1.0.4, we really on the finish tag. for version 5, we'll have to check the process list to see if it finished. Or add extra file
                     //
                     if($scan_status == false){

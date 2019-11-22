@@ -4,9 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Jekyll v3.8.5">
-    <title>Offcanvas template · Bootstrap</title>
+    <meta name="author" content="McScanFace">
+    <title>McScanFace: Taking off the massc, giving masscan a face.</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/4.3/examples/offcanvas/">
     <link href="{{asset('css/sticky-footer-navbar.css')}}" rel="stylesheet">

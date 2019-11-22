@@ -33,8 +33,8 @@
     <tbody>
     @if(count($servers)>0)
         @foreach($servers as $server)
-    <!--<tr class='clickable-row' data-href='{{asset('/servers/' . $server->id)}}'>-->
-    <tr>
+    <tr class='clickable-row' data-href='{{asset('/servers/' . $server->id)}}'>
+    <!--<tr>-->
         <td>{{ $server->name }}</td>
         <td>{{ $server->ip }}</td>
         <td>{{ $server->port }}</td>
@@ -68,7 +68,7 @@
     @endforeach
     @else
         <tr>
-            <td colspan="6" class="text-center">
+            <td colspan="7" class="text-center">
                 Empty server list
             </td>
         </tr>

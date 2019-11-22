@@ -126,7 +126,6 @@ class ServerController extends Controller
             [
                 'ip' => $request->ip,
                 'port' => $request->port,
-                'passkey' => $request->passkey,
                 'user' => $request->user,
                 'name' => $request->name,
                 'user_id' => Auth::user()->id,

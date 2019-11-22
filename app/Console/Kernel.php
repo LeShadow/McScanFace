@@ -27,10 +27,10 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         $schedule->command('checkserverstatus')->everyFiveMinutes();
-        $schedule->command('checkscanstatus')->everyFiveMinutes();
+        $schedule->command('checkscanstatus')->everyMinute();
     }
 
-    /**
+    /**N74e74S2xfb
      * Register the commands for the application.
      *
      * @return void
