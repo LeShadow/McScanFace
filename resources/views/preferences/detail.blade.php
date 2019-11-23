@@ -5,7 +5,7 @@
     <div class="col-md-2"></div>
             <div class="col-md-8">
                 <div class="card my-5 shadow-sm">
-                    <div class="card-header">{{ __('Preferences') }}</div>
+                    <div class="card-header">{{ __('Preferences') }} <a href="{{ route('get_edit_prefs') }}" role="button" class="btn btn-primary btn-sm float-right">Edit Preferences</a></div>
 
                     <div class="card-body">
                         <div class="row p-1">

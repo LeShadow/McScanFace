@@ -7,6 +7,7 @@ use App\ScanFiles;
 use Illuminate\Http\Request;
 use Elasticsearch\ClientBuilder;
 use Storage;
+use Auth;
 class ScanFilesController extends Controller
 {
     protected $prefs;
