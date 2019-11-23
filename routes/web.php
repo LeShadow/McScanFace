@@ -21,8 +21,7 @@ Route::get('/user/addserver', 'ServerController@create')->name('createserver');
 Route::redirect('/home', '/dashboard')->middleware('auth');
 Route::get('/dashboard', 'UserController@show')->middleware('auth');
 Route::get('/servers/overview', 'ServerController@index')->middleware('auth')->name('server_overview');
-Route::get('/preferences', 'PreferenceController@show')->middleware('auth')->name('preferences');
-Route::post('/preferences', 'PreferenceController@update')->middleware('auth')->name('preferences');
+Route::get('/preferences', 'PreferencesController@show')->middleware('auth')->name('preferences');
 Route::get('/servers/create', 'ServerController@create')->middleware('auth')->name('get_create_server');
 Route::post('/servers/create', 'ServerController@store')->middleware('auth')->name('post_create_server');
 Route::get('/servers/edit/{id}', 'ServerController@edit')->middleware('auth')->name('get_edit_server');
@@ -39,3 +38,8 @@ Route::post('/scans/delete', 'ScanController@destroy')->middleware('auth')->name
 Route::get('/scans/{id}', 'ScanController@show')->middleware('auth')->name('detail_scan');
 Route::post('/scans/start/{id}', 'ScanController@start')->middleware('auth')->name('post_start_scan');
 Route::post('/scans/results/{id}', 'ScanController@get_results')->middleware('auth')->name('post_results_scan');
+Route::post('/scans/results/{id}/export', 'ScanFilesController@export_to_es')->middleware('auth')->name('exportToEs');
+
+Route::post('/prefs/edit', 'PreferencesController@update')->middleware('auth')->name('post_edit_prefs');
+Route::get('/prefs/edit', 'PreferencesController@edit')->middleware('auth')->name('get_edit_prefs');
+Route::get('/prefs', 'PreferencesController@show')->middleware('auth')->name('show_prefs');

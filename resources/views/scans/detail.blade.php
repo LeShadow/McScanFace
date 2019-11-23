@@ -25,7 +25,11 @@
                     <div class="row p-1">
                         @if(count($files)>0)
                             @foreach($files as $file)
-                        <div class="border-bottom col-sm-6 text-left mb-3"><p>Name:<br /><sub>Hash:</sub></p></div> <div class="border-bottom col-sm-6 text-right mb-3"><p><a href="{{ asset('storage/results/' . $file->filename) }}" class="btn btn-info btn-sm">Download {{$file->filename}}</a><br /><sub>{{$file->hash}}</sub></p></div>
+                        <div class="border-bottom col-sm-6 text-left mb-3"><p>Name:  {{$file->filename}}<br /><sub>Hash: {{$file->hash}}</sub></p></div> <div class="border-bottom col-sm-6 text-right mb-3"><p><a href="{{ asset('storage/results/' . $file->filename) }}" class="btn btn-info btn-sm">Download</a><a href="{{ route('exportToEs', ['id'=>$scan->id]) }}" role="button" class="btn btn-dark btn-sm{{$scan->scan_status < 2 ? " disabled" : ""}}"  onclick="event.preventDefault();document.getElementById('export-results-scan-form-{{$scan->id}}').submit();" {{$scan->scan_status < 2 ? 'aria-disabled="true"' : ''}}>Export Results</a>
+                                    <form id="export-results-scan-form-{{$scan->id}}" action="{{ route('exportToEs', ['id'=>$scan->id]) }}" method="POST" style="display: none;">
+                                        <input type="hidden" name="id" value="{{ $scan->id }}">
+                                        @csrf
+                                    </form></p></div>
                             @endforeach
                             @endif
                     </div>
