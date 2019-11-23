@@ -57,7 +57,20 @@ class CheckServerStatus extends Command
                 if ($command_output !== false && Str::contains($command_output, 'bin/masscan')) {
                     $this->servers->update($server->id, ['masscan_install_status' => 1]);
                 } else {
-                    $this->servers->update($server->id, ['masscan_install_status' => 0]);
+                    // This is a chain of commands which will update the server package lists, download masscan source, build it and copy the binary to /usr/bin
+                    //
+                    // TODO: We should first find out what package provider this server has (apt, yum, dnf, zypper,...). But since this a proof of concept for now, this will be on the todolist
+                    //
+                    $install_masscan_command = $this->ssh->command('apt-get update && apt-get install git gcc make libpcap-dev -y && wget https://github.com/robertdavidgraham/masscan/archive/1.0.4.tar.gz && tar zxvf 1.0.4.tar.gz && cd masscan-1.0.4 && make && mv bin/masscan /usr/bin/masscan');
+                    $check_masscan_install = $this->ssh->command('which masscan');
+                    if ($install_masscan_command !== false && Str::contains($check_masscan_install, 'bin/masscan'))
+                    {
+                        $this->servers->update($server->id, ['masscan_install_status' => 1]);
+                    }
+                    else
+                    {
+                        $this->servers->update($server->id, ['masscan_install_status' => 0]);
+                    }
                 }
             }
 
