@@ -12,7 +12,7 @@ class ScanFilesController extends Controller
 {
     protected $prefs;
 
-    public function __construct(PreferencesRepositoryInterface $pref)
+    public function __construct(PreferencesRepositoryInterface $pref) 
     {
         $this->prefs = $pref;
     }
